@@ -169,44 +169,65 @@ These six patterns show up constantly in unguided agent output. The whole point 
 ## What's included
 
 ```
-.claude/CLAUDE.md   # Loaded automatically by Claude Code
-.codex/AGENTS.md    # Loaded by OpenAI Codex CLI and other agents that follow the AGENTS.md convention
+.claude/
+├── CLAUDE.md              # Always-loaded by Claude Code: general rules
+└── rules/                 # Path-scoped rules: load conditionally
+    ├── typescript.md      #   only when *.ts / *.tsx are read
+    ├── react.md           #   only when *.tsx / components/** are read
+    └── testing.md         #   only when test files are read
+
+.codex/
+└── AGENTS.md              # Single file for Codex CLI and other AGENTS.md-aware agents
+                           # Contains everything (Codex doesn't read .claude/rules/)
 ```
 
-Both files contain the same guidelines, covering:
+Claude Code loads `.claude/CLAUDE.md` on every turn, plus any rule files in `.claude/rules/` whose `paths:` glob matches files Claude has read in the session. This keeps the always-on context small while delivering language- or area-specific guidance only when it's relevant. ([docs](https://code.claude.com/docs/en/claude-directory))
 
-- **Reusability**: no magic values, single-responsibility functions, design for reuse.
-- **TypeScript**: no `any`, no escape-hatch casts, strict mode, generics over widening.
-- **React / Frontend**: check existing components/hooks before writing new ones, no hardcoded copy/colors/spacing.
-- **Architecture**: match existing patterns, clean `init` / `main`, no god classes, single reason to change.
-- **General style**: intent-revealing names, no premature abstraction, comments explain *why* not *what*.
+Codex and other agents that use the `AGENTS.md` convention don't support path-scoped rules, so `.codex/AGENTS.md` ships as a single file with everything inlined.
+
+The guidelines cover:
+
+- **How to Work** *(always-on)*: read before editing, plan multi-step changes, verify after, push back instead of silently complying, stay in scope.
+- **General Style** *(always-on)*: intent-revealing names, no premature abstraction, comments explain *why* not *what*.
+- **Reusability** *(always-on)*: no magic values, single-responsibility functions, design for reuse without forcing it.
+- **Architecture** *(always-on)*: match existing patterns, clean `init` / `main`, no god classes, single reason to change.
+- **No Shortcuts** *(always-on)*: no lint suppressions, no escape-hatch casts, no skipped tests, no bypassed quality gates.
+- **Error Handling** *(always-on)*: decide recoverable vs. fatal, never swallow, log with context, don't use exceptions for control flow.
+- **Dependencies** *(always-on)*: don't add a dep when stdlib or existing utilities suffice; justify any new one.
+- **Security** *(always-on)*: never log secrets/PII, validate at trust boundaries, parameterized queries, no DIY crypto.
+- **Git and Pull Requests** *(always-on)*: protect user changes, no destructive commands without confirmation, small focused commits and PRs.
+- **TypeScript** *(scoped to `*.ts` / `*.tsx`)*: no `any`, no `as` casts to silence the compiler, strict mode, discriminated unions over optional fields.
+- **React / Frontend** *(scoped to `*.tsx` / `components/**` / `hooks/**`)*: check existing components/hooks before writing new ones, prefer existing style tokens.
+- **Testing** *(scoped to test files)*: match the project's style, test behavior not implementation, cover boundaries not just the happy path.
 
 ## How to use
 
 ### Option 1: One-line install with cURL (recommended)
 
-Grab just the file you need without cloning the repo.
+Grab just the files you need without cloning the repo.
 
-**Claude Code (project-level):**
+**Claude Code (project-level — full setup with path-scoped rules):**
 ```bash
-curl -fsSL -o CLAUDE.md https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/CLAUDE.md
+mkdir -p .claude/rules && \
+  curl -fsSL -o .claude/CLAUDE.md       https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/CLAUDE.md && \
+  curl -fsSL -o .claude/rules/typescript.md https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/rules/typescript.md && \
+  curl -fsSL -o .claude/rules/react.md      https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/rules/react.md && \
+  curl -fsSL -o .claude/rules/testing.md    https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/rules/testing.md
 ```
 
-**Codex CLI / AGENTS.md convention (project-level):**
+**Codex CLI / AGENTS.md convention (project-level — single file):**
 ```bash
-curl -fsSL -o AGENTS.md https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.codex/AGENTS.md
-```
-
-**Both at once:**
-```bash
-curl -fsSL -o CLAUDE.md https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/CLAUDE.md && \
 curl -fsSL -o AGENTS.md https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.codex/AGENTS.md
 ```
 
 **Install globally (applies to every project on your machine):**
 ```bash
 # Claude Code (user-level)
-mkdir -p ~/.claude && curl -fsSL -o ~/.claude/CLAUDE.md https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/CLAUDE.md
+mkdir -p ~/.claude/rules && \
+  curl -fsSL -o ~/.claude/CLAUDE.md             https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/CLAUDE.md && \
+  curl -fsSL -o ~/.claude/rules/typescript.md   https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/rules/typescript.md && \
+  curl -fsSL -o ~/.claude/rules/react.md        https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/rules/react.md && \
+  curl -fsSL -o ~/.claude/rules/testing.md      https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/rules/testing.md
 
 # Codex CLI (user-level)
 mkdir -p ~/.codex && curl -fsSL -o ~/.codex/AGENTS.md https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.codex/AGENTS.md
@@ -218,14 +239,14 @@ mkdir -p ~/.codex && curl -fsSL -o ~/.codex/AGENTS.md https://raw.githubusercont
 git clone https://github.com/aandrewduong/agent-coding-guidelines.git
 cd your-project
 
-# For Claude Code
-cp /path/to/agent-coding-guidelines/.claude/CLAUDE.md .
+# For Claude Code (copies CLAUDE.md and the path-scoped rules directory)
+cp -r /path/to/agent-coding-guidelines/.claude .
 
 # For Codex CLI / other agents using the AGENTS.md convention
 cp /path/to/agent-coding-guidelines/.codex/AGENTS.md .
 ```
 
-Most agents look for these files at the project root (`./CLAUDE.md`, `./AGENTS.md`) or walk up the directory tree to find them.
+Claude Code reads from `.claude/CLAUDE.md` and `.claude/rules/`. Codex and other AGENTS.md-aware agents read from `./AGENTS.md` (project root) or walk up the directory tree to find one.
 
 ### Option 3: Sparse-checkout / submodule
 
@@ -235,11 +256,12 @@ If you want to keep pulling updates from this repo into multiple projects, add i
 
 The guidelines are intentionally generic. Edit them for your project:
 
-- **Drop sections that don't apply.** Working in pure Python? Delete the TypeScript and React sections.
-- **Add project-specific rules.** Things like *"all API handlers go in `src/api/`"* or *"use `pino` for logging"* belong in your project's copy, not the generic template.
+- **Drop rule files that don't apply.** Working in pure Python? Delete `.claude/rules/typescript.md` and `.claude/rules/react.md` (and trim those sections out of `.codex/AGENTS.md`).
+- **Add your own rules.** Drop a new file into `.claude/rules/` with a `paths:` glob to scope it. For example, a `.claude/rules/python.md` with `paths: ["**/*.py"]` only loads when Python files are read.
+- **Add project-specific rules** to `.claude/CLAUDE.md`. Things like *"all API handlers go in `src/api/`"* or *"use `pino` for logging"* belong in your project's copy, not the generic template.
 - **Tighten or relax rules** to match your team's taste. The goal is consistency, not adherence to *these specific* rules.
 
-Keep in mind: every line of `CLAUDE.md` / `AGENTS.md` is loaded into the agent's context on every turn. Verbosity has a real cost. If a rule isn't pulling its weight, delete it.
+Keep in mind: every line of `.claude/CLAUDE.md` and `.codex/AGENTS.md` is loaded into the agent's context on every turn. Verbosity has a real cost — that's exactly the problem path-scoped rules solve. Move anything language- or area-specific into `.claude/rules/` so it only loads when relevant.
 
 ## Why this works
 
@@ -249,7 +271,7 @@ This file is the onboarding doc.
 
 ## Contributing
 
-PRs welcome, especially for additional sections (testing, error handling, security) that stay project-agnostic.
+PRs welcome, especially for additional sections that stay project-agnostic.
 
 ## License
 
