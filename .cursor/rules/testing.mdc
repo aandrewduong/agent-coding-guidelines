@@ -1,0 +1,12 @@
+---
+globs: "**/*.test.*, **/*.spec.*, **/__tests__/**, **/tests/**, **/test/**"
+alwaysApply: false
+---
+
+# Testing
+
+- If test cases exist in the project, use them. Run them before and after changes to confirm nothing regressed, and add to them when introducing new behavior.
+- Match the project's existing test style (framework, file location, naming) rather than introducing a new one.
+- Test behavior, not implementation. Tests should still pass after a refactor that doesn't change observable behavior.
+- Cover the boundaries: empty input, max input, error paths, off-by-one cases. The happy path is the easiest test and the least valuable.
+- If no tests exist for the area you're touching, that's fine; don't bolt on a test framework just to add one. But flag it if the change is risky.

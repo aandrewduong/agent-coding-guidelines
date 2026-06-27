@@ -1,0 +1,51 @@
+---
+globs: "**/*.ts, **/*.tsx, **/*.mts, **/*.cts"
+alwaysApply: false
+---
+
+# TypeScript
+
+- Do not use the `any` type. If a type is genuinely unknown, use `unknown` and narrow it before use.
+- Avoid `as` casts to silence the compiler. Fix the underlying type instead.
+- Prefer `interface` or `type` definitions for object shapes over inline structural types when they will be reused.
+- Enable and respect strict mode (`strict: true` in `tsconfig.json`).
+- Use generics when the function is genuinely polymorphic; use a concrete type when it isn't. Don't reach for generics by default.
+- Prefer discriminated unions over optional fields when modeling variants.
+
+Slop:
+
+```ts
+function parseResponse(data: any): any {
+  return data.results.map((r: any) => r.value);
+}
+```
+
+Better:
+
+```ts
+interface ApiResponse<T> {
+  results: Array<{ value: T }>;
+}
+
+function parseResponse<T>(data: ApiResponse<T>): T[] {
+  return data.results.map((r) => r.value);
+}
+```
+
+Slop (variants modeled with optional fields, impossible states allowed):
+
+```ts
+interface Result {
+  ok: boolean;
+  value?: string;
+  error?: string;
+}
+```
+
+Better (discriminated union; impossible states stay impossible):
+
+```ts
+type Result =
+  | { ok: true; value: string }
+  | { ok: false; error: string };
+```

@@ -4,9 +4,9 @@ Without proper guidelines, AI coding agents default to generating slop code: cod
 
 It's like handing a toddler a hammer and saying "go build a house." The hammer works. The toddler is enthusiastic. The house is not up to code.
 
-AI gets smarter with each model release, but smarter without guidance just means it builds *bigger* broken houses, *faster*. Capability without direction amplifies the mess. A good `CLAUDE.md` / `AGENTS.md` is the blueprint that turns raw capability into maintainable code.
+AI gets smarter with each model release, but smarter without guidance just means it builds *bigger* broken houses, *faster*. Capability without direction amplifies the mess. A good set of Cursor Project Rules, a `CLAUDE.md`, or an `AGENTS.md` is the blueprint that turns raw capability into maintainable code.
 
-A drop-in `CLAUDE.md` / `AGENTS.md` for AI coding agents (Claude Code, OpenAI Codex CLI) that enforces basic engineering principles: reusability, no magic strings, no `any` in TypeScript, no god classes, clean entry points, and meaningful comments only.
+Drop-in Cursor Project Rules, `CLAUDE.md`, and `AGENTS.md` files for AI coding agents (Cursor, Claude Code, OpenAI Codex CLI) that enforce basic engineering principles: reusability, no magic strings, no `any` in TypeScript, no god classes, clean entry points, and meaningful comments only.
 
 > **Heads up:** This repo is **my personal coding guidelines.** It reflects how *I* like to work and what I want my agents to do. Your mileage may vary; your stack, team conventions, and taste are probably different from mine. Treat this as a starting point to fork and edit, not a one-size-fits-all standard.
 
@@ -24,7 +24,7 @@ Modern AI coding agents are powerful, but without explicit guidelines they defau
 
 The root cause is the same in every case: **the agent has no shared definition of "good" for your project.** It does whatever its training distribution suggests, which averages out to mediocre. It will happily ship code that compiles, passes tests, and is genuinely worse than what a thoughtful human would write, because nothing told it not to.
 
-A good `CLAUDE.md` (for Claude Code) or `AGENTS.md` (for Codex and most other agents) fixes this. These files load into the agent's context on every turn, so the rules are *always* present, not something it has to remember or rediscover. Spending five minutes writing one saves hours of cleanup later.
+A good set of Cursor Project Rules, a `CLAUDE.md` (for Claude Code), or an `AGENTS.md` (for Codex and other AGENTS.md-aware agents) fixes this. These files load into the agent's context when applicable, so the rules are present when the agent needs them instead of being something it has to remember or rediscover. Spending five minutes writing one saves hours of cleanup later.
 
 This repo is a starting point. It's project-agnostic, opinionated, and has built-in escape hatches (e.g. "don't force reusability where it doesn't fit") so the rules guide rather than tyrannize.
 
@@ -164,7 +164,7 @@ for (const user of users) {
 if (await seenEvent(event.id)) return;
 ```
 
-These six patterns show up constantly in unguided agent output. The whole point of `CLAUDE.md` / `AGENTS.md` is to keep the agent from defaulting to them.
+These six patterns show up constantly in unguided agent output. The whole point of Cursor Project Rules, `CLAUDE.md`, and `AGENTS.md` is to keep the agent from defaulting to them.
 
 ## What's included
 
@@ -176,14 +176,23 @@ These six patterns show up constantly in unguided agent output. The whole point 
     ├── react.md           #   only when *.tsx / components/** are read
     └── testing.md         #   only when test files are read
 
+.cursor/
+└── rules/                 # Cursor Project Rules
+    ├── coding-guidelines.mdc  # Always Apply: general rules
+    ├── typescript.mdc         # Apply to Specific Files: *.ts / *.tsx
+    ├── react.mdc              # Apply to Specific Files: *.tsx / components/**
+    └── testing.mdc            # Apply to Specific Files: test files
+
 .codex/
 └── AGENTS.md              # Single file for Codex CLI and other AGENTS.md-aware agents
-                           # Contains everything (Codex doesn't read .claude/rules/)
+                           # Contains everything (Codex doesn't read .claude/rules/ or .cursor/rules/)
 ```
 
 Claude Code loads `.claude/CLAUDE.md` on every turn, plus any rule files in `.claude/rules/` whose `paths:` glob matches files Claude has read in the session. This keeps the always-on context small while delivering language- or area-specific guidance only when it's relevant. ([docs](https://code.claude.com/docs/en/claude-directory))
 
-Codex and other agents that use the `AGENTS.md` convention don't support path-scoped rules, so `.codex/AGENTS.md` ships as a single file with everything inlined.
+Cursor Project Rules live in `.cursor/rules` as `.mdc` files. The general rule uses `alwaysApply: true`; language- and workflow-specific rules use Cursor `globs` so they attach only for matching files. Cursor also supports project-root and nested `AGENTS.md` as a simple markdown alternative when you do not need `.mdc` metadata. ([docs](https://cursor.com/docs/rules))
+
+Codex and agents that only use the `AGENTS.md` convention don't support these path-scoped rule directories, so `.codex/AGENTS.md` ships as a single file with everything inlined.
 
 The guidelines cover:
 
@@ -215,6 +224,17 @@ mkdir -p .claude/rules && \
   curl -fsSL -o .claude/rules/testing.md    https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.claude/rules/testing.md
 ```
 
+**Cursor (project-level — Project Rules):**
+```bash
+mkdir -p .cursor/rules && \
+  curl -fsSL -o .cursor/rules/coding-guidelines.mdc https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.cursor/rules/coding-guidelines.mdc && \
+  curl -fsSL -o .cursor/rules/typescript.mdc        https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.cursor/rules/typescript.mdc && \
+  curl -fsSL -o .cursor/rules/react.mdc             https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.cursor/rules/react.mdc && \
+  curl -fsSL -o .cursor/rules/testing.mdc           https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.cursor/rules/testing.mdc
+```
+
+In Cursor, you can also import this GitHub repo from **Customize → Rules → Add Rule → Remote Rule (Github)**. Cursor scans for `.mdc` files and syncs them into `.cursor/rules/imported/<repoName>`.
+
 **Codex CLI / AGENTS.md convention (project-level — single file):**
 ```bash
 curl -fsSL -o AGENTS.md https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.codex/AGENTS.md
@@ -233,6 +253,8 @@ mkdir -p ~/.claude/rules && \
 mkdir -p ~/.codex && curl -fsSL -o ~/.codex/AGENTS.md https://raw.githubusercontent.com/aandrewduong/agent-coding-guidelines/main/.codex/AGENTS.md
 ```
 
+Cursor Project Rules are designed to be checked into each project. For global Cursor preferences, use **Customize → Rules** and add User Rules.
+
 ### Option 2: Clone and copy
 
 ```bash
@@ -242,11 +264,14 @@ cd your-project
 # For Claude Code (copies CLAUDE.md and the path-scoped rules directory)
 cp -r /path/to/agent-coding-guidelines/.claude .
 
+# For Cursor (copies Project Rules)
+cp -r /path/to/agent-coding-guidelines/.cursor .
+
 # For Codex CLI / other agents using the AGENTS.md convention
 cp /path/to/agent-coding-guidelines/.codex/AGENTS.md .
 ```
 
-Claude Code reads from `.claude/CLAUDE.md` and `.claude/rules/`. Codex and other AGENTS.md-aware agents read from `./AGENTS.md` (project root) or walk up the directory tree to find one.
+Claude Code reads from `.claude/CLAUDE.md` and `.claude/rules/`. Cursor reads Project Rules from `.cursor/rules/*.mdc`, and can also read `AGENTS.md` in the project root or subdirectories. Codex and other AGENTS.md-aware agents read from `./AGENTS.md` (project root) or walk up the directory tree to find one.
 
 ### Option 3: Sparse-checkout / submodule
 
@@ -256,16 +281,16 @@ If you want to keep pulling updates from this repo into multiple projects, add i
 
 The guidelines are intentionally generic. Edit them for your project:
 
-- **Drop rule files that don't apply.** Working in pure Python? Delete `.claude/rules/typescript.md` and `.claude/rules/react.md` (and trim those sections out of `.codex/AGENTS.md`).
-- **Add your own rules.** Drop a new file into `.claude/rules/` with a `paths:` glob to scope it. For example, a `.claude/rules/python.md` with `paths: ["**/*.py"]` only loads when Python files are read.
-- **Add project-specific rules** to `.claude/CLAUDE.md`. Things like *"all API handlers go in `src/api/`"* or *"use `pino` for logging"* belong in your project's copy, not the generic template.
+- **Drop rule files that don't apply.** Working in pure Python? Delete the TypeScript and React files from `.claude/rules/` or `.cursor/rules/` (and trim those sections out of `.codex/AGENTS.md`).
+- **Add your own rules.** For Claude Code, drop a new file into `.claude/rules/` with a `paths:` glob. For Cursor, add a `.mdc` file under `.cursor/rules/` with `globs`, `description`, or `alwaysApply` frontmatter.
+- **Add project-specific rules** to `.claude/CLAUDE.md`, `.cursor/rules/coding-guidelines.mdc`, or `AGENTS.md`. Things like *"all API handlers go in `src/api/`"* or *"use `pino` for logging"* belong in your project's copy, not the generic template.
 - **Tighten or relax rules** to match your team's taste. The goal is consistency, not adherence to *these specific* rules.
 
-Keep in mind: every line of `.claude/CLAUDE.md` and `.codex/AGENTS.md` is loaded into the agent's context on every turn. Verbosity has a real cost — that's exactly the problem path-scoped rules solve. Move anything language- or area-specific into `.claude/rules/` so it only loads when relevant.
+Keep in mind: every line of always-on instructions is loaded into the agent's context whenever those instructions apply. Verbosity has a real cost — that's exactly the problem path-scoped rules solve. Move anything language- or area-specific into `.claude/rules/` or scoped `.cursor/rules/*.mdc` files so it only loads when relevant.
 
 ## Why this works
 
-LLMs are pattern matchers. When you give them clear, concrete rules in their context, they follow them. Not perfectly, but well enough that the *baseline* quality of generated code goes up substantially. The difference between an agent with no guidelines and one with a thoughtful `CLAUDE.md` / `AGENTS.md` is roughly the difference between a junior who's never seen the codebase and one who's been onboarded.
+LLMs are pattern matchers. When you give them clear, concrete rules in their context, they follow them. Not perfectly, but well enough that the *baseline* quality of generated code goes up substantially. The difference between an agent with no guidelines and one with thoughtful Cursor Project Rules, `CLAUDE.md`, or `AGENTS.md` is roughly the difference between a junior who's never seen the codebase and one who's been onboarded.
 
 This file is the onboarding doc.
 
