@@ -1,0 +1,15 @@
+- Do not suppress lint errors to make them go away. No `// eslint-disable`, `@ts-ignore`, `@ts-expect-error`, `# noqa`, or equivalent escape hatches without a documented reason. The lint error is a signal; fix the underlying issue.
+- Do not skip type checks with casts (`as any`, `as unknown as X`) just to get the build green. If the types are wrong, fix the types.
+- Do not comment out, skip, or weaken failing tests to make CI pass. If the test is wrong, fix the test. If the code is wrong, fix the code.
+- Do not bypass project quality gates (typecheck, tests, formatter, pre-commit hooks, CI checks) to ship faster. If a gate is wrong, fix the gate; don't route around it.
+- Do not leave `TODO: fix later` in place of doing the work when the work is in scope. If something genuinely has to be deferred, file an issue and link to it from the comment.
+- Speed is not an excuse. A shortcut that ships today becomes a debugging session next week.
+
+Slop:
+
+```ts
+// @ts-expect-error - types are wrong here
+const result = processInput(rawData);
+```
+
+Better: fix the type of `processInput`, or narrow `rawData` before passing it. If a third-party library has a wrong type, add a typed wrapper at the boundary so the suppression lives in one well-documented place instead of being scattered through call sites.

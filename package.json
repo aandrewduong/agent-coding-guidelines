@@ -1,0 +1,12 @@
+{
+  "name": "agent-coding-guidelines",
+  "version": "1.0.0",
+  "description": "Drop-in coding guidelines for AI coding agents (Claude Code, Cursor, Codex CLI), generated from a single source of truth.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "generate": "node src/generate.mjs",
+    "check": "node src/generate.mjs --check"
+  }
+}

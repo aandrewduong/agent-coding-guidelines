@@ -1,0 +1,6 @@
+- Never discard or overwrite the user's uncommitted changes. Don't run destructive commands (`git reset --hard`, `git checkout --`, `git clean -fd`, mass deletes, force-push to shared branches) without explicit confirmation.
+- Commits should be small and focused. One logical change per commit. A commit that touches twenty files across five concerns is hard to review and impossible to revert cleanly.
+- Commit messages: imperative subject line under 72 characters, then a blank line, then a body explaining *why* the change is being made when it isn't obvious from the diff.
+- A pull request should do one thing. If the description needs the word "also" more than once, split it.
+- Match the project's existing branch naming, commit conventions, and PR template.
+- Don't force-push to shared branches. Don't rewrite history that other people have based work on.

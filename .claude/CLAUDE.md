@@ -1,6 +1,8 @@
+<!-- GENERATED FILE — do not edit directly. Edit src/sections/*.md and run `npm run generate`. -->
+
 # Coding Guidelines
 
-The sections below are always loaded. Topic-specific rules (TypeScript, React, testing) live in `.claude/rules/` and load conditionally when Claude reads files matching their `paths:` globs.
+The sections below are always loaded. Topic-specific rules (TypeScript, React, testing) live in `.claude/rules/` and load when Claude reads or works with files matching their `paths:` globs.
 
 ## How to Work
 
@@ -11,7 +13,6 @@ The sections below are always loaded. Topic-specific rules (TypeScript, React, t
 - When uncertain about intent (ambiguous request, multiple valid interpretations, missing constraint), ask one focused question rather than guessing. Don't ask for things you can determine by reading the code.
 - Push back when asked to do something that conflicts with these guidelines or with the existing architecture. Explain the conflict and propose an alternative. Don't silently comply.
 - Stay in scope. If you notice unrelated issues while working, mention them but don't fix them in the same change unless asked.
-
 
 ## General Style
 
@@ -41,7 +42,6 @@ Better (delete the noise; keep comments that earn their place):
 // Stripe webhooks can fire twice for the same event; dedupe by event.id.
 if (await seenEvent(event.id)) return;
 ```
-
 
 ## Reusability
 
@@ -77,7 +77,6 @@ function daysSinceLogin(user: User): number {
 const isStale = (user: User) => daysSinceLogin(user) >= STALE_AFTER_DAYS;
 const shouldWarn = (user: User) => daysSinceLogin(user) >= WARN_AFTER_DAYS;
 ```
-
 
 ## Architecture
 
@@ -132,7 +131,6 @@ async function main() {
 }
 ```
 
-
 ## No Shortcuts
 
 - Do not suppress lint errors to make them go away. No `// eslint-disable`, `@ts-ignore`, `@ts-expect-error`, `# noqa`, or equivalent escape hatches without a documented reason. The lint error is a signal; fix the underlying issue.
@@ -150,7 +148,6 @@ const result = processInput(rawData);
 ```
 
 Better: fix the type of `processInput`, or narrow `rawData` before passing it. If a third-party library has a wrong type, add a typed wrapper at the boundary so the suppression lives in one well-documented place instead of being scattered through call sites.
-
 
 ## Error Handling
 
@@ -180,14 +177,12 @@ try {
 }
 ```
 
-
 ## Dependencies
 
 - Don't add a new dependency when existing project utilities or the standard library are sufficient. Search the codebase first.
 - If a new dependency is genuinely needed, justify it: what does it do that we can't reasonably do ourselves, and why this library over the alternatives?
 - Prefer small, well-maintained libraries with clear scope over kitchen-sink frameworks pulled in for a single helper.
 - Removing a dependency is also a change worth considering — dead deps are a maintenance and security cost.
-
 
 ## Security
 
@@ -196,7 +191,6 @@ try {
 - Use parameterized queries or an ORM. Never build SQL with string concatenation.
 - Don't roll your own crypto, auth, or session management. Use the project's existing primitives or a vetted library.
 - Secrets belong in environment variables or a secret manager, never in code, never in commit history. If a secret is committed by mistake, rotate it; deleting the commit is not enough.
-
 
 ## Git and Pull Requests
 

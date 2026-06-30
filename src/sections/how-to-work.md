@@ -1,0 +1,7 @@
+- Before making non-trivial changes, read enough of the surrounding code to understand the conventions, abstractions, and existing utilities. Match what's there. If you can't find an obvious pattern, ask before introducing a new one.
+- Before large edits, check the current diff (`git status`, `git diff`) and work with existing in-progress changes rather than overwriting them.
+- For multi-step changes, plan first. List the files you expect to touch and the order of operations. Surface the plan when the change is large enough that the user will want to course-correct early.
+- Verify your work after making changes. Run the typechecker, linter, and tests if they exist. If you can't run them, say so explicitly *and describe the remaining risk* — don't imply the change is verified.
+- When uncertain about intent (ambiguous request, multiple valid interpretations, missing constraint), ask one focused question rather than guessing. Don't ask for things you can determine by reading the code.
+- Push back when asked to do something that conflicts with these guidelines or with the existing architecture. Explain the conflict and propose an alternative. Don't silently comply.
+- Stay in scope. If you notice unrelated issues while working, mention them but don't fix them in the same change unless asked.

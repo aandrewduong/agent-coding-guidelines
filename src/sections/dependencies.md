@@ -1,0 +1,4 @@
+- Don't add a new dependency when existing project utilities or the standard library are sufficient. Search the codebase first.
+- If a new dependency is genuinely needed, justify it: what does it do that we can't reasonably do ourselves, and why this library over the alternatives?
+- Prefer small, well-maintained libraries with clear scope over kitchen-sink frameworks pulled in for a single helper.
+- Removing a dependency is also a change worth considering — dead deps are a maintenance and security cost.

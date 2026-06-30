@@ -6,6 +6,8 @@ paths:
   - "**/*.cts"
 ---
 
+<!-- GENERATED FILE — do not edit directly. Edit src/sections/*.md and run `npm run generate`. -->
+
 # TypeScript
 
 - Do not use the `any` type. If a type is genuinely unknown, use `unknown` and narrow it before use.

@@ -3,6 +3,8 @@ globs: "**/*.test.*, **/*.spec.*, **/__tests__/**, **/tests/**, **/test/**"
 alwaysApply: false
 ---
 
+<!-- GENERATED FILE — do not edit directly. Edit src/sections/*.md and run `npm run generate`. -->
+
 # Testing
 
 - If test cases exist in the project, use them. Run them before and after changes to confirm nothing regressed, and add to them when introducing new behavior.

@@ -6,6 +6,8 @@ paths:
   - "**/hooks/**"
 ---
 
+<!-- GENERATED FILE — do not edit directly. Edit src/sections/*.md and run `npm run generate`. -->
+
 # React / Frontend
 
 - Before building a new component, check the existing component library/folder (e.g. `components/`, `ui/`, `shared/`) for one that already does the job or can be extended. Don't reinvent buttons, modals, inputs, layouts.

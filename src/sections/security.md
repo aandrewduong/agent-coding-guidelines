@@ -1,0 +1,5 @@
+- Never log secrets, tokens, passwords, or full PII payloads. Redact at the logging boundary, not at every call site.
+- Validate and sanitize all input crossing a trust boundary (HTTP requests, file uploads, third-party webhooks). Don't rely on client-side validation alone.
+- Use parameterized queries or an ORM. Never build SQL with string concatenation.
+- Don't roll your own crypto, auth, or session management. Use the project's existing primitives or a vetted library.
+- Secrets belong in environment variables or a secret manager, never in code, never in commit history. If a secret is committed by mistake, rotate it; deleting the commit is not enough.

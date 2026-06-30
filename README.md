@@ -169,26 +169,36 @@ These six patterns show up constantly in unguided agent output. The whole point 
 ## What's included
 
 ```
-.claude/
+src/                       # ── source of truth ── edit here, then `npm run generate`
+├── sections/              #   one .md per guideline section (title-less bodies)
+│   ├── how-to-work.md
+│   ├── working-as-an-agent.md
+│   ├── general-style.md     #   …and the rest of the always-on sections
+│   ├── typescript.md        #   scoped sections live here too
+│   ├── react.md
+│   └── testing.md
+└── generate.mjs           # Packages sections into every file below (zero deps)
+
+.claude/                   # ── generated ──
 ├── CLAUDE.md              # Always-loaded by Claude Code: general rules
 └── rules/                 # Path-scoped rules: load conditionally
     ├── typescript.md      #   only when *.ts / *.tsx are read
     ├── react.md           #   only when *.tsx / components/** are read
     └── testing.md         #   only when test files are read
 
-.cursor/
+.cursor/                   # ── generated ──
 └── rules/                 # Cursor Project Rules
     ├── coding-guidelines.mdc  # Always Apply: general rules
     ├── typescript.mdc         # Apply to Specific Files: *.ts / *.tsx
     ├── react.mdc              # Apply to Specific Files: *.tsx / components/**
     └── testing.mdc            # Apply to Specific Files: test files
 
-.codex/
-└── AGENTS.md              # Single file for Codex CLI and other AGENTS.md-aware agents
-                           # Contains everything (Codex doesn't read .claude/rules/ or .cursor/rules/)
+.codex/AGENTS.md           # ── generated ── single file, everything inlined
+AGENTS.md                  # ── generated ── same content at the repo root, for
+                           #   AGENTS.md-aware agents that discover it by walking up
 ```
 
-Claude Code loads `.claude/CLAUDE.md` on every turn, plus any rule files in `.claude/rules/` whose `paths:` glob matches files Claude has read in the session. This keeps the always-on context small while delivering language- or area-specific guidance only when it's relevant. ([docs](https://code.claude.com/docs/en/claude-directory))
+Claude Code loads `.claude/CLAUDE.md` on every turn, plus any rule files in `.claude/rules/` whose `paths:` glob matches files Claude reads or works with. Path-scoped rules trigger on those file operations, not preemptively at session start, so the always-on context stays small while language- or area-specific guidance loads only when it's relevant. ([docs](https://code.claude.com/docs/en/claude-directory))
 
 Cursor Project Rules live in `.cursor/rules` as `.mdc` files. The general rule uses `alwaysApply: true`; language- and workflow-specific rules use Cursor `globs` so they attach only for matching files. Cursor also supports project-root and nested `AGENTS.md` as a simple markdown alternative when you do not need `.mdc` metadata. ([docs](https://cursor.com/docs/rules))
 
@@ -208,6 +218,19 @@ The guidelines cover:
 - **TypeScript** *(scoped to `*.ts` / `*.tsx`)*: no `any`, no `as` casts to silence the compiler, strict mode, discriminated unions over optional fields.
 - **React / Frontend** *(scoped to `*.tsx` / `components/**` / `hooks/**`)*: check existing components/hooks before writing new ones, prefer existing style tokens.
 - **Testing** *(scoped to test files)*: match the project's style, test behavior not implementation, cover boundaries not just the happy path.
+
+## Editing & regenerating
+
+Every per-tool file is **generated** from `src/sections/*.md` by `src/generate.mjs`. Each section is authored once as a title-less markdown body; the script wraps it in the right frontmatter and headings for each tool, so the wording can't drift between Claude, Cursor, and the `AGENTS.md` copies.
+
+```bash
+npm run generate   # rewrite every generated file from src/sections/
+npm run check      # CI guard: fail if a generated file is stale or hand-edited
+```
+
+Generated files carry a `GENERATED FILE — do not edit directly` banner, and `.github/workflows/check-generated.yml` runs `npm run check` on every push and PR — so a hand-edit that bypasses the source fails CI. The generator has zero dependencies; `node src/generate.mjs` works without an `npm install`.
+
+> If you only **copied the generated files** into your own project (via the steps below), you don't have `src/` — just edit the copied files directly. The generator is for maintaining or forking *this* repo.
 
 ## How to use
 
@@ -281,8 +304,9 @@ If you want to keep pulling updates from this repo into multiple projects, add i
 
 The guidelines are intentionally generic. Edit them for your project:
 
-- **Drop rule files that don't apply.** Working in pure Python? Delete the TypeScript and React files from `.claude/rules/` or `.cursor/rules/` (and trim those sections out of `.codex/AGENTS.md`).
-- **Add your own rules.** For Claude Code, drop a new file into `.claude/rules/` with a `paths:` glob. For Cursor, add a `.mdc` file under `.cursor/rules/` with `globs`, `description`, or `alwaysApply` frontmatter.
+- **Working in this repo (or a fork)?** Edit `src/sections/*.md` and run `npm run generate` — don't hand-edit the generated files (CI will reject it). If you only copied the generated files into your project, edit those directly.
+- **Drop rule files that don't apply.** Working in pure Python? Delete the TypeScript and React sections from `src/sections/` (remove their entries from `generate.mjs`) and regenerate — or, if you copied files, just delete them from `.claude/rules/` / `.cursor/rules/` and trim those sections out of `AGENTS.md`.
+- **Add your own rules.** In this repo, add a `src/sections/<name>.md` body and register it in `GENERAL_SECTIONS` or `SCOPED_SECTIONS` in `generate.mjs`, then regenerate. If you copied files, drop a `.claude/rules/*.md` with a `paths:` glob (Claude) or a `.cursor/rules/*.mdc` with `globs` (Cursor) directly.
 - **Add project-specific rules** to `.claude/CLAUDE.md`, `.cursor/rules/coding-guidelines.mdc`, or `AGENTS.md`. Things like *"all API handlers go in `src/api/`"* or *"use `pino` for logging"* belong in your project's copy, not the generic template.
 - **Tighten or relax rules** to match your team's taste. The goal is consistency, not adherence to *these specific* rules.
 
