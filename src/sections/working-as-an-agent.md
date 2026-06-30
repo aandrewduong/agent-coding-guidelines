@@ -1,0 +1,6 @@
+- Keep diffs minimal. Change only what the task requires. Don't reformat untouched lines, reorder imports, or rename things outside scope — gratuitous churn buries the real change and makes review impossible.
+- Don't invent APIs. Before calling a function or referencing a config key, environment variable, or file path, confirm it actually exists in the codebase or its documentation. A plausible-looking name is not proof that it exists.
+- Do what was asked — no gold-plating. Don't add config options, abstractions, retries, or "future-proofing" that weren't requested. Unrequested complexity is also slop.
+- Don't fabricate verification. Only call something tested or working if you actually ran it. If you couldn't run it, say so plainly and state the residual risk.
+- Clean up after yourself. Remove debug logging, commented-out experiments, and scratch files before you finish.
+- When stuck, stop and ask. If two attempts at a fix don't work, report what you tried and what you observed instead of thrashing on more guesses.

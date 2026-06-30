@@ -207,7 +207,8 @@ Codex and agents that only use the `AGENTS.md` convention don't support these pa
 The guidelines cover:
 
 - **How to Work** *(always-on)*: read before editing, plan multi-step changes, verify after, push back instead of silently complying, stay in scope.
-- **General Style** *(always-on)*: intent-revealing names, no premature abstraction, comments explain *why* not *what*.
+- **Working as an Agent** *(always-on)*: minimal diffs, don't invent APIs, no gold-plating, don't fabricate verification, clean up debug artifacts, stop and ask when stuck.
+- **General Style** *(always-on)*: intent-revealing names, no premature abstraction, async/concurrency correctness, comments explain *why* not *what*.
 - **Reusability** *(always-on)*: no magic values, single-responsibility functions, design for reuse without forcing it.
 - **Architecture** *(always-on)*: match existing patterns, clean `init` / `main`, no god classes, single reason to change.
 - **No Shortcuts** *(always-on)*: no lint suppressions, no escape-hatch casts, no skipped tests, no bypassed quality gates.
@@ -216,7 +217,7 @@ The guidelines cover:
 - **Security** *(always-on)*: never log secrets/PII, validate at trust boundaries, parameterized queries, no DIY crypto.
 - **Git and Pull Requests** *(always-on)*: protect user changes, no destructive commands without confirmation, small focused commits and PRs.
 - **TypeScript** *(scoped to `*.ts` / `*.tsx`)*: no `any`, no `as` casts to silence the compiler, strict mode, discriminated unions over optional fields.
-- **React / Frontend** *(scoped to `*.tsx` / `components/**` / `hooks/**`)*: check existing components/hooks before writing new ones, prefer existing style tokens.
+- **React / Frontend** *(scoped to `*.tsx` / `components/**` / `hooks/**`)*: check existing components/hooks before writing new ones, prefer existing style tokens, semantic HTML and accessible inputs/images/keyboard interaction.
 - **Testing** *(scoped to test files)*: match the project's style, test behavior not implementation, cover boundaries not just the happy path.
 
 ## Editing & regenerating

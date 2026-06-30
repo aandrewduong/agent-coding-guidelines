@@ -24,6 +24,7 @@ const BANNER =
 // General sections load on every turn, in this order.
 const GENERAL_SECTIONS = [
   { slug: "how-to-work", title: "How to Work" },
+  { slug: "working-as-an-agent", title: "Working as an Agent" },
   { slug: "general-style", title: "General Style" },
   { slug: "reusability", title: "Reusability" },
   { slug: "architecture", title: "Architecture" },

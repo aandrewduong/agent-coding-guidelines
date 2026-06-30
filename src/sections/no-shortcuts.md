@@ -3,13 +3,5 @@
 - Do not comment out, skip, or weaken failing tests to make CI pass. If the test is wrong, fix the test. If the code is wrong, fix the code.
 - Do not bypass project quality gates (typecheck, tests, formatter, pre-commit hooks, CI checks) to ship faster. If a gate is wrong, fix the gate; don't route around it.
 - Do not leave `TODO: fix later` in place of doing the work when the work is in scope. If something genuinely has to be deferred, file an issue and link to it from the comment.
+- When a third-party type is genuinely wrong, fix it at the boundary: add a typed wrapper in one well-documented place instead of scattering suppressions across call sites.
 - Speed is not an excuse. A shortcut that ships today becomes a debugging session next week.
-
-Slop:
-
-```ts
-// @ts-expect-error - types are wrong here
-const result = processInput(rawData);
-```
-
-Better: fix the type of `processInput`, or narrow `rawData` before passing it. If a third-party library has a wrong type, add a typed wrapper at the boundary so the suppression lives in one well-documented place instead of being scattered through call sites.

@@ -16,6 +16,9 @@ paths:
 - No hardcoded copy, colors, spacing, or breakpoints inside components. Pull from theme tokens, design system constants, or i18n strings.
 - Co-locate styles and tests with the component, but keep the component itself free of page- or feature-specific logic so it can be dropped into other parts of the app.
 - Reuse existing hooks before writing new ones. If you write a new hook, make sure it isn't a near-duplicate of one already in the codebase.
+- Build on semantic HTML (`button`, `a`, `label`, `nav`, headings) before reaching for a `div` with a click handler. Native elements bring focus, keyboard, and screen-reader behavior for free.
+- Every input has an associated `<label>`; every meaningful image has `alt` text (decorative images get `alt=""`). Interactive elements must be reachable and operable by keyboard, and color must not be the only signal for state or meaning.
+- Reach for ARIA only to fill gaps native HTML can't express. A correct native element beats a `div` patched with `role` and `aria-*`.
 
 Slop (third near-identical button this week, hardcoded styles):
 
